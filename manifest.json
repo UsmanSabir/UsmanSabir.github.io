@@ -1,0 +1,12 @@
+{
+ "name": "HRIS Attendance",
+ "short_name": "HRIS Attenda",
+ "start_url": "https://usmansabir.github.io/hris.html",
+ "description": "",
+ "display": "standalone",
+ "orientation": "any",
+ "theme_color": "#ffff00",
+ "background_color": "#ffffff",
+ "icons": [],
+ "scope": "https://usmansabir.github.io/hris.html"
+}
