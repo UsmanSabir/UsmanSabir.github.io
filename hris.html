@@ -181,7 +181,7 @@
          fetch("https://hris.netsoltech.com/hris/rest/Dashboard/AttendancesParam", requestOptions)
            .then(response => response.json())
            .then(result =>{
-         debugger;
+         //debugger;
            console.log(result);
            if(result.status == 1){
          	const currDay = result.data.filter(function(data){
@@ -239,7 +239,7 @@
          document.getElementById('btntin').disabled = true;
          document.getElementById('btntout').disabled = true;
          			
-         debugger;
+         //debugger;
          
          	const d = new Date();
          	const day=d.getDate();
@@ -271,7 +271,7 @@
          fetch("https://hris.netsoltech.com/hris/rest/Dashboard/hrisCheckInOut", requestOptions)
            .then(response => response.json())
            .then(result => {
-           debugger;
+           //debugger;
            console.log(result);
            
            document.getElementById('tin').innerText = "Attendance updated. Please wait...";
