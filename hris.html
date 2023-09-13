@@ -11,7 +11,7 @@
    <body>
       <br/>
       <div id="login-form-wrap">
-         <h2>HRIS Attandance</h2>
+         <h2>HRIS Attendance</h2>
          <form id="login-form">
             <p>
                <input type="text" id="username" name="username" placeholder="Username" required><i class="validation"><span></span><span></span></i>
@@ -60,7 +60,7 @@
          	console.log(user);
          	
          	if(user && pass){
-         		showMessage('');
+         		showMessage('Please wait...');
          		document.getElementById('login').disabled = true;
          		getToken(user, pass);
          	}
@@ -190,7 +190,7 @@
          	});
          	
          	console.log(currDay);
-             if(currDay.length>0){
+             if(currDay.length>0 && currDay[0].timeIn){
          		const timeIn = currDay[0];
          		let time = timeIn.timeIn;
          		if(timeIn.timeOut){
