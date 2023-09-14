@@ -124,6 +124,7 @@ input[type="password"]:valid ~ .validation span:last-child {
   top: 0px;
 }
 
+input[type="submit"],
 input[type="button"] {
   border: none;
   display: block;
@@ -140,11 +141,15 @@ input[type="button"] {
   cursor: pointer;
   text-align: center;
 }
+
+input[type="submit"]:hover,
 input[type="button"]:hover {
   background-color: #329dd5;
   -webkit-transition: all 0.2s ease;
   transition: all 0.2s ease;
 }
+
+input[type="submit"]:disabled,
 input[type="button"]:disabled,
 input[type="button"][disabled]{
   border: 1px solid #999999;
