@@ -12,7 +12,9 @@
     <body>
         <br />
         <div id="login-form-wrap">
-            <h2>HRIS Lite V1.3</h2>
+           
+			<h2>HRIS Lite V1.3</h2>
+			
             <form id="login-form">
                 <p>
                     <input type="text" id="username" name="username" placeholder="Username" required /><i class="validation"><span></span><span></span></i>
@@ -31,6 +33,7 @@
         </div>
         <!--login-form-wrap-->
         <div id="attendance">
+			<a class="lo" href="javascript:logout();" >Logout</a>
             <h2>HRIS Lite V1.3</h2>
             <div id="create-account-wrap">
                 <!-- <p>Not a member? <a href="#">Create Account</a><p>  -->
@@ -222,6 +225,13 @@
                 console.log("Mark Time Out");
                 markAttandance("0");
             }
+			
+			function logout(){
+				console.log("Logout called");
+				token = '';
+				empId=0;
+				location.reload();
+			}
 
             function markAttandance(timeInFlag) {
                 document.getElementById("tin").innerText = "Please wait...";

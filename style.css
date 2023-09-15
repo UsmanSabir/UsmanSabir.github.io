@@ -166,3 +166,16 @@ input[type="button"][disabled]{
   padding: 10px 0;
   border-radius: 0 0 4px 4px;
 }
+a.lo {
+    color: #2da1c1;
+    font-size: 14px;
+	font-weight: bold;
+    text-decoration: none;
+    float: right;
+	margin: 5px;
+}
+a.lo:hover
+{
+    color: #f90;
+    text-decoration: underline;         
+}

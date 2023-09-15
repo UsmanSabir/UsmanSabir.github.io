@@ -1,4 +1,4 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><title>HRIS Lite V1.3</title><link rel="stylesheet" href="./normalize.min.css"><link rel="stylesheet" href="./style.css"><link rel="manifest" href="/manifest.json"><script src="/app.js"></script><style></style></head><body><br><div id="login-form-wrap"><h2>HRIS Lite V1.3</h2><form id="login-form"><p><input type="text" id="username" name="username" placeholder="Username" required><i class="validation"><span></span><span></span></i></p><p><input type="password" id="pass" name="pass" placeholder="Password" required><i class="validation"><span></span><span></span></i></p><p><input type="submit" id="login" value="Login"></p></form><div id="create-account-wrap"><p id="msg"></div></div><div id="attendance"><h2>HRIS Lite V1.3</h2><div id="create-account-wrap"><p id="tin">Please wait...</p></div><form><p></p><p><input type="button" id="btntin" value="Time IN" disabled="disabled" onclick="markTimeIn()"></p><p><input type="button" id="btntout" value="Time OUT" disabled="disabled" onclick="markTimeOut()"></p></form></div><script>var token = "";
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>HRIS Lite V1.3</title><link rel="stylesheet" href="./normalize.min.css"><link rel="stylesheet" href="./style.css"><link rel="manifest" href="/manifest.json"><script src="/app.js"></script><style></style></head><body><br><div id="login-form-wrap"><h2>HRIS Lite V1.3</h2><form id="login-form"><p><input type="text" id="username" name="username" placeholder="Username" required><i class="validation"><span></span><span></span></i></p><p><input type="password" id="pass" name="pass" placeholder="Password" required><i class="validation"><span></span><span></span></i></p><p><input type="submit" id="login" value="Login"></p></form><div id="create-account-wrap"><p id="msg"></div></div><div id="attendance"><a class="lo" href="javascript:logout();">Logout</a><h2>HRIS Lite V1.3</h2><div id="create-account-wrap"><p id="tin">Please wait...</p></div><form><p></p><p><input type="button" id="btntin" value="Time IN" disabled="disabled" onclick="markTimeIn()"></p><p><input type="button" id="btntout" value="Time OUT" disabled="disabled" onclick="markTimeOut()"></p></form></div><script>var token = "";
             var empId = 0;
 
             function login() {
@@ -173,6 +173,13 @@
                 console.log("Mark Time Out");
                 markAttandance("0");
             }
+			
+			function logout(){
+				console.log("Logout called");
+				token = '';
+				empId=0;
+				location.reload();
+			}
 
             function markAttandance(timeInFlag) {
                 document.getElementById("tin").innerText = "Please wait...";
@@ -237,4 +244,5 @@
                     document.getElementById("pass").value = p;
                 }
                 showElement("attendance", false);
-            });</script></body></html>
+            });
+			</script></body></html>
