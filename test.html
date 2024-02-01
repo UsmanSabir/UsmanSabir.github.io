@@ -1,0 +1,314 @@
+
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>HRIS Lite V1.4</title><link rel="stylesheet" href="./normalize.min.css"><link rel="stylesheet" href="./style.css"><link rel="manifest" href="/manifest.json"><script src="/app.js"></script><style></style></head><body><br><div id="login-form-wrap"><h2>HRIS Lite V1.4</h2><form id="login-form"><p><input type="text" id="username" name="username" placeholder="Username" required><i class="validation"><span></span><span></span></i></p><p><input type="password" id="pass" name="pass" placeholder="Password" required><i class="validation"><span></span><span></span></i></p><p><input type="submit" id="login" value="Login"></p></form><div id="create-account-wrap"><p id="msg"></div></div><div id="attendance"><a class="lo" href="javascript:logout();">Logout</a><h2>HRIS Lite V1.4</h2><div id="create-account-wrap"><p id="tin">Please wait...</p></div><form><p></p><p><input type="button" id="btntin" value="Time IN" disabled="disabled" onclick="markTimeIn()"></p><p><input type="button" id="btntout" value="Time OUT" disabled="disabled" onclick="markTimeOut()"></p></form></div><script>var token = "";
+            var empId = 0;
+			var autoMark = false;
+			var autoTimeInOnly = false;
+			var autoTimeOutOnly = false;
+
+            function login() {
+                let userField = document.getElementById("username");
+                let passField = document.getElementById("pass");
+
+                let user = userField.value || userField.innerText || userField.textContent;
+                var pass = passField.value;
+
+                console.log(user);
+
+                if (user && pass) {
+                    showMessage("Please wait...");
+                    document.getElementById("login").disabled = true;
+                    getToken(user, pass);
+                } else {
+                    document.getElementById("login").disabled = false;
+                    showError("Enter user pass");
+                }
+            }
+
+            function getToken(user, pass) {
+                var myHeaders = new Headers();
+                myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
+
+                var urlencoded = new URLSearchParams();
+                urlencoded.append("username", user);
+                urlencoded.append("password", pass);
+                urlencoded.append("domain", "1");
+
+                var requestOptions = {
+                    method: "POST",
+                    headers: myHeaders,
+                    body: urlencoded,
+                    redirect: "follow",
+                };
+
+                fetch("https://hris.netsoltech.com/hris/rest/Login/AuthLogin", requestOptions)
+                    .then((response) => response.json())
+                    .then((result) => {
+                        console.log(result);
+
+                        document.getElementById("login").disabled = false;
+
+                        if (result.status == 1) {
+                            showMessage("Login Success");
+
+                            token = result.data.token;
+                            empId = result.data.employee.id;
+
+                            localStorage.setItem("u", user);
+                            localStorage.setItem("p", pass);
+
+                            postLogin();
+                        } else {
+                            showError("Login FAILED");
+                        }
+                    })
+                    .catch((error) => {
+                        document.getElementById("login").disabled = false;
+                        showError("Login FAILED > " + error);
+                        console.log("error", error);
+                    });
+            }
+
+            function postLogin() {
+                showElement("login-form-wrap", false);
+                showElement("attendance", true);
+                checkAttendance();
+            }
+
+            function showElement(id, show) {
+                if (show) {
+                    document.getElementById(id).style.display = "block";
+                } else {
+                    document.getElementById(id).style.display = "none";
+                }
+            }
+
+            function showError(msg) {
+                let ele = document.getElementById("msg");
+                ele.style.color = "red";
+                ele.innerText = msg;
+            }
+            function showMessage(msg) {
+                let ele = document.getElementById("msg");
+                ele.style.color = "green";
+                ele.innerText = msg;
+            }
+
+            function showAttError(msg) {
+                let ele = document.getElementById("tin");
+
+                ele.style.color = "red";
+                ele.innerText = msg;
+            }
+            function showAttMessage(msg) {
+                let ele = document.getElementById("tin");
+
+                ele.style.color = "green";
+                ele.innerText = msg;
+            }
+
+            function checkAttendance() {
+                const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+                const d = new Date();
+                const month = d.toLocaleString("en", { month: "long" }); //default
+                console.log("month:", month);
+                const year = d.getFullYear();
+                console.log("year:", year);
+                //let month = monthNames[d.getMonth()]);
+
+                var myHeaders = new Headers();
+                myHeaders.append("Accept", "application/json");
+                myHeaders.append("Authorization", token);
+                myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
+
+                var urlencoded = new URLSearchParams();
+                urlencoded.append("Months", month);
+                urlencoded.append("Years", year);
+
+                var requestOptions = {
+                    method: "POST",
+                    headers: myHeaders,
+                    body: urlencoded,
+                    redirect: "follow",
+                };
+
+				let isTimeInAction = null;
+				
+                fetch("https://hris.netsoltech.com/hris/rest/Dashboard/AttendancesParam", requestOptions)
+                    .then((response) => response.json())
+                    .then((result) => {
+                        //debugger;
+                        console.log(result);
+                        if (result.status == 1) {
+                            const currDay = result.data.filter(function (data) {
+                                return data.isCurrentDay;
+                            });
+
+                            console.log(currDay);
+                            if (currDay.length > 0 && currDay[0].timeIn) {
+                                const timeIn = currDay[0];
+                                let time = timeIn.timeIn;
+                                if (timeIn.timeOut) {
+                                    time = time + " / " + timeIn.timeOut;
+                                    document.getElementById("btntin").disabled = false;
+                                    document.getElementById("btntout").disabled = true;
+									isTimeInAction = true;
+                                } else {
+                                    document.getElementById("btntin").disabled = true;
+                                    document.getElementById("btntout").disabled = false;
+									isTimeInAction = false;
+                                }
+                                document.getElementById("tin").innerText = time;
+                            } else {
+                                document.getElementById("tin").innerText = "N/A";
+                                document.getElementById("btntin").disabled = false;
+                                document.getElementById("btntout").disabled = true;
+								isTimeInAction = true;
+                            }
+							
+							if(autoMark === true){
+								console.log('autoMark is enabled with isTimeInAction> ', isTimeInAction);
+								if(isTimeInAction===true){
+									console.log('time-in action');
+									if(autoTimeOutOnly===false){ //restrict auto action to time-out only
+										console.log('Trigger time-in action');
+										//alert('time-in action');
+										setTimeout(markTimeIn, 800);
+									}
+									
+								}
+								else if (isTimeInAction === false){
+									console.log('time-out action');
+									if(autoTimeInOnly===false){ //restrict auto action to time-in only
+										console.log('Trigger time-out action');
+										//alert('time-out action');
+										setTimeout(markTimeOut, 800);
+									}									
+								}
+							}
+							
+                        }
+                    })
+                    .catch((error) => {
+                        console.log("error", error);
+                        showAttError("Network error. Please Refresh page and try again. >" + error);
+                    });
+            }
+
+            function markTimeIn() {
+                console.log("Mark Time In");
+                markAttandance("1");
+            }
+
+            function markTimeOut() {
+                console.log("Mark Time Out");
+                markAttandance("0");
+            }
+			
+			function logout(){
+				console.log("Logout called");
+				token = '';
+				empId=0;
+				location.reload();
+			}
+
+            function markAttandance(timeInFlag) {
+                document.getElementById("tin").innerText = "Please wait...";
+                document.getElementById("btntin").disabled = true;
+                document.getElementById("btntout").disabled = true;
+
+                //debugger;
+
+                const d = new Date();
+                const day = d.getDate();
+                let dd;
+                if (day < 10) dd = "0" + day;
+                else dd = day;
+
+                const dateStr = dd + "/" + d.getMonth() + "/" + d.getYear() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+
+                var myHeaders = new Headers();
+                myHeaders.append("Accept", "application/json");
+                myHeaders.append("Authorization", token);
+                myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
+
+                var urlencoded = new URLSearchParams();
+                urlencoded.append("flag", timeInFlag);
+                urlencoded.append("employeeid", empId);
+                urlencoded.append("time", dateStr);
+
+                var requestOptions = {
+                    method: "POST",
+                    headers: myHeaders,
+                    body: urlencoded,
+                    redirect: "follow",
+                };
+
+                fetch("https://hris.netsoltech.com/hris/rest/Dashboard/hrisCheckInOut", requestOptions)
+                    .then((response) => response.json())
+                    .then((result) => {
+                        //debugger;
+                        console.log(result);
+
+                        document.getElementById("tin").innerText = "Attendance updated. Please wait...";
+
+                        setTimeout(checkAttendance, 1000);
+                    })
+                    .catch((error) => {
+                        console.log("error", error);
+                        document.getElementById("tin").innerText = "Error > " + error;
+                    });
+            }
+
+            document.addEventListener("DOMContentLoaded", () => {
+                console.log("Hello World!");
+
+                document.getElementById("login").onclick = function (e) {
+                    e.preventDefault();
+                    login();
+                };
+
+                let u = localStorage.getItem("u");
+                let p = localStorage.getItem("p");
+                if (u && p) {
+                    document.getElementById("username").value = u;
+                    document.getElementById("pass").value = p;
+                }
+                showElement("attendance", false);
+				
+				
+				checkAuto(u,p);
+            });
+			
+			function checkAuto(u,p){
+			
+				const queryString = window.location.search;
+				console.log(queryString);
+				const urlParams = new URLSearchParams(queryString);
+				const auto = urlParams.get('auto')
+				console.log(auto);
+				
+				const timeInFlag = urlParams.get('timein')
+				const timeOutFlag = urlParams.get('timeout')
+				
+				if(timeInFlag=='true' || timeInFlag==1){
+					autoTimeInOnly = true;
+				}
+				if(timeOutFlag=='true' || timeOutFlag==1){
+				  autoTimeOutOnly = true;
+				}
+				
+				if(auto=='true' || auto==1){
+					console.log('auto is enabled', auto,u);
+					
+					if(u && p){					
+						console.log('login triggered',u);
+						autoMark = true;
+						setTimeout(login,500);
+					}
+				}
+				else{
+					console.log('auto is disabled', auto);
+				}
+			}
+			</script></body></html>
