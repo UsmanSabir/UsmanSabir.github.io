@@ -2,6 +2,7 @@
 <!DOCTYPE html><html><head><meta charset="UTF-8"><title>HRIS Lite V1.4</title><link rel="stylesheet" href="./normalize.min.css"><link rel="stylesheet" href="./style.css"><link rel="manifest" href="/manifest.json"><script src="/app.js"></script><style></style></head><body><br><div id="login-form-wrap"><h2>HRIS Lite V1.4</h2><form id="login-form"><p><input type="text" id="username" name="username" placeholder="Username" required><i class="validation"><span></span><span></span></i></p><p><input type="password" id="pass" name="pass" placeholder="Password" required><i class="validation"><span></span><span></span></i></p><p><input type="submit" id="login" value="Login"></p></form><div id="create-account-wrap"><p id="msg"></div></div><div id="attendance"><a class="lo" href="javascript:logout();">Logout</a><h2>HRIS Lite V1.4</h2><div id="create-account-wrap"><p id="tin">Please wait...</p></div><form><p></p><p><input type="button" id="btntin" value="Time IN" disabled="disabled" onclick="markTimeIn()"></p><p><input type="button" id="btntout" value="Time OUT" disabled="disabled" onclick="markTimeOut()"></p></form></div><script>var token = "";
             var empId = 0;
 			var autoMark = false;
+			var autoTriggered = false;
 			var autoTimeInOnly = false;
 			var autoTimeOutOnly = false;
 
@@ -166,28 +167,36 @@
 								isTimeInAction = true;
                             }
 							
-							if(autoMark === true){
-								console.log('autoMark is enabled with isTimeInAction> ', isTimeInAction);
-								if(isTimeInAction===true){
-									console.log('time-in action');
-									if(autoTimeOutOnly===false){ //restrict auto action to time-out only
-										console.log('Trigger time-in action');
-										//alert('time-in action');
-										setTimeout(markTimeIn, 800);
+							if(autoTriggered===false){
+								if(autoMark === true){
+									console.log('autoMark is enabled with isTimeInAction> ', isTimeInAction);
+									autoTriggered = true;
+									if(isTimeInAction===true){
+										console.log('time-in action');
+										if(autoTimeOutOnly===false){ //restrict auto action to time-out only
+											console.log('Trigger time-in action');
+											//alert('time-in action');
+											setTimeout(markTimeIn, 800);
+										}
+										
 									}
-									
+									else if (isTimeInAction === false){
+										console.log('time-out action');
+										if(autoTimeInOnly===false){ //restrict auto action to time-in only
+											console.log('Trigger time-out action');
+											//alert('time-out action');
+											setTimeout(markTimeOut, 800);
+										}									
+									}
 								}
-								else if (isTimeInAction === false){
-									console.log('time-out action');
-									if(autoTimeInOnly===false){ //restrict auto action to time-in only
-										console.log('Trigger time-out action');
-										//alert('time-out action');
-										setTimeout(markTimeOut, 800);
-									}									
-								}
+								
 							}
-							
-                        }
+							else{
+								//auto triggered. logout now
+								console.log('auto triggered. logout now');
+								setTimeout(logout, 800);
+							}
+						}
                     })
                     .catch((error) => {
                         console.log("error", error);
@@ -209,7 +218,9 @@
 				console.log("Logout called");
 				token = '';
 				empId=0;
-				location.reload();
+				window.location = window.location.pathname;
+				//window.location = window.location.href.split("?")[0];
+				//location.reload();
 			}
 
             function markAttandance(timeInFlag) {
