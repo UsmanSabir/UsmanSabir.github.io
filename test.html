@@ -5,6 +5,8 @@
 			var autoTriggered = false;
 			var autoTimeInOnly = false;
 			var autoTimeOutOnly = false;
+			var useProxy = false;
+			var proxy = "https://corsproxy.io/?";
 
             function login() {
                 let userField = document.getElementById("username");
@@ -28,7 +30,7 @@
             function getToken(user, pass) {
                 var myHeaders = new Headers();
                 myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
-
+				
                 var urlencoded = new URLSearchParams();
                 urlencoded.append("username", user);
                 urlencoded.append("password", pass);
@@ -120,7 +122,9 @@
                 var myHeaders = new Headers();
                 myHeaders.append("Accept", "application/json");
                 myHeaders.append("Authorization", token);
-                myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
+				myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
+				//myHeaders.append("Access-Control-Max-Age", 500);
+				
 
                 var urlencoded = new URLSearchParams();
                 urlencoded.append("Months", month);
@@ -135,7 +139,9 @@
 
 				let isTimeInAction = null;
 				
-                fetch("https://hris.netsoltech.com/hris/rest/Dashboard/AttendancesParam", requestOptions)
+				const urlProxy = (useProxy === true ? proxy : '');
+				
+                fetch(urlProxy + "https://hris.netsoltech.com/hris/rest/Dashboard/AttendancesParam", requestOptions)
                     .then((response) => response.json())
                     .then((result) => {
                         //debugger;
@@ -200,7 +206,15 @@
                     })
                     .catch((error) => {
                         console.log("error", error);
-                        showAttError("Network error. Please Refresh page and try again. >" + error);
+						
+						if(useProxy === false){
+								showAttMessage("Network error, Retrying with Proxy. Please wait..." );
+								useProxy = true;
+								setTimeout(checkAttendance, 800);
+						}
+						else{
+							showAttError("Network error. Please Refresh page and try again. >" + error);
+						}
                     });
             }
 
@@ -255,7 +269,8 @@
                     redirect: "follow",
                 };
 
-                fetch("https://hris.netsoltech.com/hris/rest/Dashboard/hrisCheckInOut", requestOptions)
+				const urlProxy = (useProxy === true ? proxy : '');
+                fetch(urlProxy + "https://hris.netsoltech.com/hris/rest/Dashboard/hrisCheckInOut", requestOptions)
                     .then((response) => response.json())
                     .then((result) => {
                         //debugger;
