@@ -1,5 +1,7 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><title>HRIS Lite V1.3</title><link rel="stylesheet" href="./normalize.min.css"><link rel="stylesheet" href="./style.css"><link rel="manifest" href="/manifest.json"><script src="/app.js"></script><style></style></head><body><br><div id="login-form-wrap"><h2>HRIS Lite V1.3</h2><form id="login-form"><p><input type="text" id="username" name="username" placeholder="Username" required><i class="validation"><span></span><span></span></i></p><p><input type="password" id="pass" name="pass" placeholder="Password" required><i class="validation"><span></span><span></span></i></p><p><input type="submit" id="login" value="Login"></p></form><div id="create-account-wrap"><p id="msg"></div></div><div id="attendance"><a class="lo" href="javascript:logout();">Logout</a><h2>HRIS Lite V1.3</h2><div id="create-account-wrap"><p id="tin">Please wait...</p></div><form><p></p><p><input type="button" id="btntin" value="Time IN" disabled="disabled" onclick="markTimeIn()"></p><p><input type="button" id="btntout" value="Time OUT" disabled="disabled" onclick="markTimeOut()"></p></form></div><script>var token = "";
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>HRIS Lite V1.3.1</title><link rel="stylesheet" href="./normalize.min.css"><link rel="stylesheet" href="./style.css"><link rel="manifest" href="/manifest.json"><script src="/app.js"></script><style></style></head><body><br><div id="login-form-wrap"><h2>HRIS Lite V1.3.1</h2><form id="login-form"><p><input type="text" id="username" name="username" placeholder="Username" required><i class="validation"><span></span><span></span></i></p><p><input type="password" id="pass" name="pass" placeholder="Password" required><i class="validation"><span></span><span></span></i></p><p><input type="submit" id="login" value="Login"></p></form><div id="create-account-wrap"><p id="msg"></div></div><div id="attendance"><a class="lo" href="javascript:logout();">Logout</a><h2>HRIS Lite V1.3.1</h2><div id="create-account-wrap"><p id="tin">Please wait...</p></div><form><p></p><p><input type="button" id="btntin" value="Time IN" disabled="disabled" onclick="markTimeIn()"></p><p><input type="button" id="btntout" value="Time OUT" disabled="disabled" onclick="markTimeOut()"></p></form></div><script>var token = "";
             var empId = 0;
+			var useProxy = false;
+			var proxy = "https://corsproxy.io/?";
 
             function login() {
                 let userField = document.getElementById("username");
@@ -128,7 +130,8 @@
                     redirect: "follow",
                 };
 
-                fetch("https://hris.netsoltech.com/hris/rest/Dashboard/AttendancesParam", requestOptions)
+				const urlProxy = (useProxy === true ? proxy : '');
+                fetch(urlProxy + "https://hris.netsoltech.com/hris/rest/Dashboard/AttendancesParam", requestOptions)
                     .then((response) => response.json())
                     .then((result) => {
                         //debugger;
@@ -159,8 +162,15 @@
                         }
                     })
                     .catch((error) => {
-                        console.log("error", error);
-                        showAttError("Network error. Please Refresh page and try again. >" + error);
+						console.log("error", error);
+                        if(useProxy === false){
+									showAttMessage("Network error, Retrying with Proxy. Please wait..." );
+									useProxy = true;
+									setTimeout(checkAttendance, 800);
+							}
+							else{
+								showAttError("Network error. Please Refresh page and try again. >" + error);
+							}						
                     });
             }
 
@@ -213,7 +223,8 @@
                     redirect: "follow",
                 };
 
-                fetch("https://hris.netsoltech.com/hris/rest/Dashboard/hrisCheckInOut", requestOptions)
+				const urlProxy = (useProxy === true ? proxy : '');
+                fetch(urlProxy + "https://hris.netsoltech.com/hris/rest/Dashboard/hrisCheckInOut", requestOptions)
                     .then((response) => response.json())
                     .then((result) => {
                         //debugger;
