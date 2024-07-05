@@ -1,4 +1,3 @@
-
 <!DOCTYPE html><html><head><meta charset="UTF-8"><title>HRIS Lite V1.4</title><link rel="stylesheet" href="./normalize.min.css"><link rel="stylesheet" href="./style.css"><link rel="manifest" href="/manifest.json"><script src="/app.js"></script><style></style></head><body><br><div id="login-form-wrap"><h2>HRIS Lite V1.4</h2><form id="login-form"><p><input type="text" id="username" name="username" placeholder="Username" required><i class="validation"><span></span><span></span></i></p><p><input type="password" id="pass" name="pass" placeholder="Password" required><i class="validation"><span></span><span></span></i></p><p><input type="submit" id="login" value="Login"></p></form><div id="create-account-wrap"><p id="msg"></div></div><div id="attendance"><a class="lo" href="javascript:logout();">Logout</a><h2>HRIS Lite V1.4</h2><div id="create-account-wrap"><p id="tin">Please wait...</p></div><form><p></p><p><input type="button" id="btntin" value="Time IN" disabled="disabled" onclick="markTimeIn()"></p><p><input type="button" id="btntout" value="Time OUT" disabled="disabled" onclick="markTimeOut()"></p></form></div><script>var token = "";
             var empId = 0;
 			var autoMark = false;
@@ -6,7 +5,7 @@
 			var autoTimeInOnly = false;
 			var autoTimeOutOnly = false;
 			var useProxy = false;
-			var proxy = "https://corsproxy.io/?";
+			var proxy = "https://cors-anywhere.herokuapp.com/";
 
             function login() {
                 let userField = document.getElementById("username");
@@ -122,6 +121,7 @@
                 var myHeaders = new Headers();
                 myHeaders.append("Accept", "application/json");
                 myHeaders.append("Authorization", token);
+                //myHeaders.append("x-cors-api-key", 'temp_fc84c65ad859b13f140a23fedf956e74');
 				myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
 				//myHeaders.append("Access-Control-Max-Age", 500);
 				
